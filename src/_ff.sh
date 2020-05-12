@@ -5,9 +5,18 @@ _ff() {
 }
 compdef _ff ff
 
-echo "HALLO FF"
-
 ff() {
+    if _flow_is_inside_base_distribution; then
+    else
+        _msgError "Flow not found inside a parent of current directory"
+        return 1
+    fi
+
+    local startDirectory=$(pwd)
+    while [ ! -f flow ]; do
+        builtin cd ..
+    done
+
     typeset -A flowCommands;
     typeset -A shellCommands;
     typeset -A functionCommands;
@@ -45,6 +54,7 @@ ff() {
             printf "\"$key:$val\" "
         done
         echo ")";
+        builtin cd $startDirectory
         return 0;
     fi
 
@@ -62,27 +72,34 @@ ff() {
             $key $val
         done
         echo ""
+        builtin cd $startDirectory
         return 0;
     fi
 
     local cmd=$1;
     shift;
     if [ ${flowCommands[$cmd]} ]; then
-        echo "flow ${flowCommands[$cmd]}" | bash
-        return 0;
+        echo "./flow ${flowCommands[$cmd]}" | bash
+        local exitCode=$?
+        builtin cd $startDirectory
+        return $exitCode
     fi
     if [ ${shellCommands[$cmd]} ]; then
         echo "${shellCommands[$cmd]}" | bash
-        return 0;
+        local exitCode=$?
+        builtin cd $startDirectory
+        return $exitCode
     fi
     if [[ $cmd == 'recreateThumbnails' ]]; then
         _msgInfo "Recreate thumbnails, this might take a while ..."
-        flow media:clearthumbnails
-        flow resource:publish
-        flow media:createthumbnails
-        flow media:renderthumbnails
+        ./flow media:clearthumbnails
+        ./flow resource:publish
+        ./flow media:createthumbnails
+        ./flow media:renderthumbnails
         _msgSuccess "Done"
-        return 0;
+        local exitCode=$?
+        builtin cd $startDirectory
+        return $exitCode
     fi
     if [[ $cmd == 'repairpermission' ]]; then
         _msgInfo "Setting file permissions per file, this might take a while ..."
@@ -98,7 +115,8 @@ ff() {
         chown -R $USER:$GROUP Web/_Resources
         chmod 775 Web/_Resources
         _msgSuccess "Done"
-        return 0;
+        builtin cd $startDirectory
+        return 0
     fi
     if [[ $cmd == 'deployContext' ]]; then
         local newContext='Production'
@@ -115,7 +133,8 @@ ff() {
         fi
         export FLOW_CONTEXT=$newContext
         _msgInfo "Set Flow Context to" $FLOW_CONTEXT
-        return 0;
+        builtin cd $startDirectory
+        return 0
     fi
     if [[ $cmd == 'switchContext' ]]; then
         if [[ $FLOW_CONTEXT == "Development" ]]
@@ -125,6 +144,10 @@ ff() {
                 export FLOW_CONTEXT=Development
                 _msgInfo "Set Flow Context to" $FLOW_CONTEXT
         fi
-        return 0;
+        builtin cd $startDirectory
+        return 0
     fi
+    local exitCode=$?
+    builtin cd $startDirectory
+    return $exitCode
 }

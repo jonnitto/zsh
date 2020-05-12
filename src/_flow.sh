@@ -39,24 +39,10 @@ _flow_subcommand() {
     compadd -x "$(cat Data/Temporary/Development/.flow-autocompletion-command-$cmd)"
 }
 
-_flow_is_inside_base_distribution() {
-    local startDirectory=$(pwd)
-    while [[ ! -f flow ]]; do
-
-        if [[ $(pwd) == "/" ]]; then
-            builtin cd $startDirectory
-            return 1
-        fi
-        builtin cd ..
-    done
-    builtin cd $startDirectory
-    return 0
-}
-
 flow() {
     if _flow_is_inside_base_distribution; then
     else
-        _msgError "low not found inside a parent of current directory"
+        _msgError "Flow not found inside a parent of current directory"
         return 1
     fi
 

@@ -1,6 +1,21 @@
 _msgInfo() { printf "\n    ${fg[cyan]}${1}${fg[green]} ${2}${reset_color}\n\n"; }
 _msgSuccess() { printf "\n    ${fg[green]}${1}${reset_color} ${2}\n\n"; }
-_msgError() {printf "\n    ${fg[red]}${1}${reset_color} ${2}\n\n"}
+_msgError() { printf "\n    ${fg[red]}${1}${reset_color} ${2}\n\n"; }
+_available() { command -v $1 >/dev/null 2>&1; }
+
+_flow_is_inside_base_distribution() {
+    local startDirectory=$(pwd)
+    while [[ ! -f flow ]]; do
+
+        if [[ $(pwd) == "/" ]]; then
+            builtin cd $startDirectory
+            return 1
+        fi
+        builtin cd ..
+    done
+    builtin cd $startDirectory
+    return 0
+}
 
 _hostname=""
 _servername="h"
@@ -24,7 +39,7 @@ if [[ $USER == "beach" ]]; then
     server="Beach"
     _servername="u"
 fi
-echo "HALLO System"
+
 ## Read ssh key
 readKey() {
     echo
@@ -98,8 +113,16 @@ esac
 case $server in
 Uberspace)
     writeNeosSettings() {
-        _checkNeos
-        [ $? -ne 0 ] && return 1
+        if _flow_is_inside_base_distribution; then
+        else
+            _msgError "Flow not found inside a parent of current directory"
+            return 1
+        fi
+
+        local startDirectory=$(pwd)
+        while [ ! -f flow ]; do
+            builtin cd ..
+        done
         _msgInfo "Write configuration file for Neos ..."
         cat >Configuration/Settings.yaml <<__EOF__
 Neos: &settings
@@ -123,6 +146,8 @@ __EOF__
         _msgInfo "Following configuration was written"
         cat Configuration/Settings.yaml
         echo
+        builtin cd $startDirectory
+        return 0
     }
     ;;
 Local)
@@ -247,7 +272,17 @@ Local)
 
     # Generate the DB and the 'Settings.yaml' file
     writeNeosSettings() {
-        _checkNeos
+        if _flow_is_inside_base_distribution; then
+        else
+            _msgError "Flow not found inside a parent of current directory"
+            return 1
+        fi
+
+        local startDirectory=$(pwd)
+        while [ ! -f flow ]; do
+            builtin cd ..
+        done
+
         [ $? -ne 0 ] && return 1
         _msgInfo "Write configuration file for Neos ..."
         dbName=$(echo ${PWD##*/} | perl -ne 'print lc(join("_", split(/(?=[A-Z])/)))' | sed -E 's/[\.-]+/_/g')
@@ -274,13 +309,15 @@ TYPO3: *settings
 
 GesagtGetan:
   OAuth2Client:
-    clientId: ${OAuth2ClientIdSecret}
+    clientId: ${OAuth2ClientId}
     clientSecret: ${OAuth2ClientSecret}
 __EOF__
 
         _msgInfo "Following configuration was written"
         cat Configuration/Settings.yaml
         echo
+        builtin cd $startDirectory
+        return 0
     }
     ;;
 esac
