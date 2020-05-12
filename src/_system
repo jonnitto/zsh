@@ -24,7 +24,7 @@ if [[ $USER == "beach" ]]; then
     server="Beach"
     _servername="u"
 fi
-
+echo "HALLO System"
 ## Read ssh key
 readKey() {
     echo

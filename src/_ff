@@ -5,6 +5,8 @@ _ff() {
 }
 compdef _ff ff
 
+echo "HALLO FF"
+
 ff() {
     typeset -A flowCommands;
     typeset -A shellCommands;
@@ -126,6 +128,3 @@ ff() {
         return 0;
     fi
 }
-
-_msgInfo() { printf "\n    ${fg[cyan]}${1}${fg[green]} ${2}${reset_color}\n\n"; }
-_msgSuccess() { printf "\n    ${fg[green]}${1}${reset_color}\n\n"; }

@@ -56,7 +56,7 @@ _flow_is_inside_base_distribution() {
 flow() {
     if _flow_is_inside_base_distribution; then
     else
-        printf "\n    ${fg[red]}Flow not found inside a parent of current directory${reset_color}\n\n"
+        _msgError "low not found inside a parent of current directory"
         return 1
     fi
 
