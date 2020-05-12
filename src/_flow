@@ -1,0 +1,71 @@
+_flow() {
+    if _flow_is_inside_base_distribution; then
+
+        local startDirectory=$(pwd)
+        while [ ! -f flow ]; do
+            builtin cd ..
+        done
+        if (($CURRENT > 2)); then
+            CURRENT=$CURRENT-1
+            local cmd=${words[2]}
+            shift words
+
+            _flow_subcommand
+        else
+            _flow_main_commands
+        fi
+        builtin cd $startDirectory
+    fi
+}
+compdef _flow flow
+
+_flow_main_commands() {
+    if [ ! -f Data/Temporary/Development/.flow-autocompletion-maincommands ]; then
+        mkdir -p Data/Temporary/Development/
+        ./flow help | grep "^[* ][ ]" | php $ZPLUG_HOME/repos/jonnitto/zsh/src/_flow.php >Data/Temporary/Development/.flow-autocompletion-maincommands
+    fi
+
+    # fills up cmdlist variable
+    eval "$(cat Data/Temporary/Development/.flow-autocompletion-maincommands)"
+
+    _describe 'flow command' cmdlist
+}
+
+_flow_subcommand() {
+    if [ ! -f Data/Temporary/Development/.flow-autocompletion-command-$cmd ]; then
+        ./flow help $cmd >Data/Temporary/Development/.flow-autocompletion-command-$cmd
+    fi
+
+    compadd -x "$(cat Data/Temporary/Development/.flow-autocompletion-command-$cmd)"
+}
+
+_flow_is_inside_base_distribution() {
+    local startDirectory=$(pwd)
+    while [[ ! -f flow ]]; do
+
+        if [[ $(pwd) == "/" ]]; then
+            builtin cd $startDirectory
+            return 1
+        fi
+        builtin cd ..
+    done
+    builtin cd $startDirectory
+    return 0
+}
+
+flow() {
+    if _flow_is_inside_base_distribution; then
+    else
+        printf "\n    ${fg[red]}Flow not found inside a parent of current directory${reset_color}\n\n"
+        return 1
+    fi
+
+    local startDirectory=$(pwd)
+    while [ ! -f flow ]; do
+        builtin cd ..
+    done
+    ./flow $@
+    local flowExitCode=$?
+    builtin cd $startDirectory
+    return $flowExitCode
+}
