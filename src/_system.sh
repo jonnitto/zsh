@@ -149,6 +149,8 @@ __EOF__
         builtin cd $startDirectory
         return 0
     }
+    alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --decorate --date=short --color | emojify"
+    alias gs='git status'
     ;;
 Local)
     alias h='cd ~/'
@@ -167,7 +169,7 @@ Local)
     alias gulpfileDiff='ksdiff ~/Repos/Neos.Plugins/Carbon.Gulp Build/Gulp'
     alias openNeosPlugins='code ~/Repos/Neos.Plugins'
 
-    alias gl="git log --graph --pretty=format:'%Cred%h%Creset %an: %s - %Creset %C(yellow)%d%Creset %Cgreen(%cr)%Creset' --abbrev-commit --date=relative"
+    alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --decorate --date=short --color | emojify"
     alias gp='git push origin HEAD'
     alias gd='git diff'
     alias gco='git checkout'

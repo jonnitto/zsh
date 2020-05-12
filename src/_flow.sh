@@ -20,6 +20,10 @@ _flow() {
 compdef _flow flow
 
 _flow_main_commands() {
+    if [ ! $ZPLUG_HOME ]; then
+        _msgError "\$ZPLUG_HOME" "is not defined"
+        return 1
+    fi
     if [ ! -f Data/Temporary/Development/.flow-autocompletion-maincommands ]; then
         mkdir -p Data/Temporary/Development/
         ./flow help | grep "^[* ][ ]" | php $ZPLUG_HOME/repos/jonnitto/zsh/src/_flow.php >Data/Temporary/Development/.flow-autocompletion-maincommands
