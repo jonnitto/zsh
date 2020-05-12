@@ -30,8 +30,8 @@ zplug "zsh-users/zsh-completions"
 zplug "zsh-users/zsh-autosuggestions"
 zplug "supercrabtree/k"
 zplug "jonnitto/zsh", from:github, defer:3
-zplug mafredri/zsh-async, from:github
-zplug sindresorhus/pure, use:pure.zsh, from:github, as:theme
+zplug "mafredri/zsh-async", from:github
+zplug "sindresorhus/pure", use:pure.zsh, from:github, as:theme
 
 # zplug check returns true if all packages are installed
 # Therefore, when it returns false, run zplug install
