@@ -60,15 +60,15 @@ ff() {
 
     if [ $# -eq 0 ]; then
         for key val in ${(kv)flowCommands}; do
-            printf "\n${CYAN}%20s${NC} %-70s" \
+            printf "\n${fg[cyan]}%20s${reset_color} %-70s" \
             $key $val
         done
         for key val in ${(kv)shellCommands}; do
-            printf "\n${CYAN}%20s${NC} %-70s" \
+            printf "\n${fg[cyan]}%20s${reset_color} %-70s" \
             $key $val
         done
         for key val in ${(kv)functionCommands}; do
-            printf "\n${CYAN}%20s${NC} %-70s" \
+            printf "\n${fg[cyan]}%20s${reset_color} %-70s" \
             $key $val
         done
         echo ""
