@@ -181,13 +181,24 @@ Local)
     alias gfr='git stash && git fetch && git rebase && git stash pop'
     neosPluginsDiff() {
         if [ $1 ]; then
-            if [ $1 == Carbon.* ]; then
-                ksdiff ~/Repos/Neos.Plugins/$1 Packages/Carbon/$1
-            else
-                ksdiff ~/Repos/Neos.Plugins/$1 Packages/Plugins/$1
+            if [ ! -d ~/Repos/Neos.Plugins/$1 ]; then
+                _msgError $1 "is not available in Neos.Plugins"
+                return 1
             fi
+
+            for category in Packages/*; do
+                for package in ${category}/*; do
+                    if [ ${category}/${1} = $package ]; then
+                        ksdiff ~/Repos/Neos.Plugins/$1 $package
+                        return 0
+                    fi
+                done
+            done
+            _msgError $1 "was not found"
+            return 1
         else
             ksdiff ~/Repos/Neos.Plugins Packages/Plugins Packages/Carbon
+            return 0
         fi
     }
     gc() {
