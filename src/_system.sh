@@ -186,6 +186,13 @@ Local)
                 return 1
             fi
 
+            for distributionPackage in DistributionPackages/*; do
+                if [ DistributionPackages/$1 = $distributionPackage ]; then
+                    ksdiff ~/Repos/Neos.Plugins/$1 $distributionPackage
+                    return 0
+                fi
+            done
+
             for category in Packages/*; do
                 for package in ${category}/*; do
                     if [ ${category}/${1} = $package ]; then
@@ -194,6 +201,7 @@ Local)
                     fi
                 done
             done
+
             _msgError $1 "was not found"
             return 1
         else
