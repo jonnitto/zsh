@@ -79,7 +79,7 @@ ff() {
     local cmd=$1;
     shift;
     if [ ${flowCommands[$cmd]} ]; then
-        echo "./flow ${flowCommands[$cmd]}" | bash
+        echo "php -d memory_limit=-1 ./flow ${flowCommands[$cmd]}" | bash
         local exitCode=$?
         builtin cd $startDirectory
         return $exitCode
@@ -92,10 +92,10 @@ ff() {
     fi
     if [[ $cmd == 'recreateThumbnails' ]]; then
         _msgInfo "Recreate thumbnails, this might take a while ..."
-        ./flow media:clearthumbnails
-        ./flow resource:publish
-        ./flow media:createthumbnails
-        ./flow media:renderthumbnails
+        php -d memory_limit=-1 ./flow media:clearthumbnails
+        php -d memory_limit=-1 ./flow resource:publish
+        php -d memory_limit=-1 ./flow media:createthumbnails
+        php -d memory_limit=-1 ./flow media:renderthumbnails
         _msgSuccess "Done"
         local exitCode=$?
         builtin cd $startDirectory
