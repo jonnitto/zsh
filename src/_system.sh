@@ -466,6 +466,7 @@ alias ci='composer install'
 alias co='composer outdated'
 alias cr='composer require'
 alias crnu='composer require --no-update'
+alias flowCreateAdmin='flow user:create --roles Administrator'
 
 function commitUpdate() {
     git add *.lock
