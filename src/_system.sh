@@ -19,6 +19,15 @@ _flow_is_inside_base_distribution() {
 
 _hostname=""
 _servername="h"
+_session_type="local"
+
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+    _session_type=remote/ssh
+else
+    case $(ps -o comm= -p $PPID) in
+    sshd | */sshd) _session_type=remote/ssh ;;
+    esac
+fi
 
 case $(hostname -f) in
 *.uberspace.de)
@@ -35,7 +44,11 @@ case $(hostname -f) in
 *) server="NONE" ;;
 esac
 
-if [[ $USER == "beach" ]]; then
+if [ $_session_type = "local" ]; then
+    server="Local"
+fi
+
+if [ $USER = "beach" ]; then
     server="Beach"
     _servername="u"
 fi
