@@ -138,7 +138,7 @@ Uberspace)
         done
         _msgInfo "Write configuration file for Neos ..."
         cat >Configuration/Settings.yaml <<__EOF__
-Neos: &settings
+Neos:
   Imagine:
     driver: Imagick
   Flow:
@@ -153,8 +153,6 @@ Neos: &settings
         user: ${USER}
         password: '$(grep -Po -m 1 "password=\K(\S)*" ~/.my.cnf)'
         host: localhost
-
-TYPO3: *settings
 __EOF__
         _msgInfo "Following configuration was written"
         cat Configuration/Settings.yaml
@@ -167,10 +165,8 @@ __EOF__
     ;;
 Local)
     alias h='cd ~/'
-    alias r='cd ~/Repos'
-    alias n='cd ~/Repos/Neos.Plugins'
-    alias p='cd ~/Repos/jonnitto/'
-    alias gg='cd ~/Repos/gesagt.getan./'
+    alias dev='cd ~/Development'
+    alias n='cd ~/Development/Neos.Plugins'
     alias copyKey='_msgSuccess "SSH Key copied to clipboard";pbcopy < ~/.ssh/id_rsa.pub'
     alias startserver='http-server -a localhost -p 8000 -c-1'
     alias installGoogleFonts='_msgSuccess "Install all Google Fonts ...";curl https://raw.githubusercontent.com/qrpike/Web-Font-Load/master/install.sh | sh'
@@ -178,9 +174,8 @@ Local)
     alias sshConnect='ssh $(basename "$PWD")'
     alias editConnect='code ~/.ssh/config'
     alias yui='yarn upgrade-interactive --latest'
-    alias initCarbon='git init;git add .;git commit -m ":tada: Initial commit";git remote add origin git@github.com:CarbonPackages/$(basename "$PWD").git;git push -u origin master'
-    alias gulpfileDiff='ksdiff ~/Repos/Neos.Plugins/Carbon.Gulp Build/Gulp'
-    alias openNeosPlugins='code ~/Repos/Neos.Plugins'
+    alias yuiglobal='yarn global upgrade-interactive --latest'
+    alias openNeosPlugins='code ~/Development/Neos.Plugins'
 
     alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --decorate --date=short --color | emojify"
     alias gp='git push origin HEAD'
@@ -194,14 +189,14 @@ Local)
     alias gfr='git stash && git fetch && git rebase && git stash pop'
     neosPluginsDiff() {
         if [ $1 ]; then
-            if [ ! -d ~/Repos/Neos.Plugins/$1 ]; then
+            if [ ! -d ~/Development/Neos.Plugins/$1 ]; then
                 _msgError $1 "is not available in Neos.Plugins"
                 return 1
             fi
 
             for distributionPackage in DistributionPackages/*; do
                 if [ DistributionPackages/$1 = $distributionPackage ]; then
-                    ksdiff ~/Repos/Neos.Plugins/$1 $distributionPackage
+                    ksdiff ~/Development/Neos.Plugins/$1 $distributionPackage
                     return 0
                 fi
             done
@@ -209,7 +204,7 @@ Local)
             for category in Packages/*; do
                 for package in ${category}/*; do
                     if [ ${category}/${1} = $package ]; then
-                        ksdiff ~/Repos/Neos.Plugins/$1 $package
+                        ksdiff ~/Development/Neos.Plugins/$1 $package
                         return 0
                     fi
                 done
@@ -218,7 +213,7 @@ Local)
             _msgError $1 "was not found"
             return 1
         else
-            ksdiff ~/Repos/Neos.Plugins Packages/Plugins Packages/Carbon
+            ksdiff ~/Development/Neos.Plugins Packages/Plugins Packages/Carbon
             return 0
         fi
     }
@@ -324,7 +319,7 @@ Local)
         _msgInfo "Create Database" $dbName
         mysql -uroot -proot -e "create database ${dbName}"
         cat >Configuration/Settings.yaml <<__EOF__
-Neos: &settings
+Neos:
   Imagine:
     driver: Imagick
   Flow:
@@ -338,13 +333,6 @@ Neos: &settings
         user: root
         password: root
         host: 127.0.0.1
-
-TYPO3: *settings
-
-GesagtGetan:
-  OAuth2Client:
-    clientId: ${OAuth2ClientId}
-    clientSecret: ${OAuth2ClientSecret}
 __EOF__
 
         _msgInfo "Following configuration was written"
